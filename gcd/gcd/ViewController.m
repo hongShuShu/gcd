@@ -21,7 +21,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self test_progress];
+    [self asyncMain];
 }
 //  B  C   F   A   D   E   G
 - (void)test_progress {
@@ -66,7 +66,7 @@
 }
 
 #pragma mark - demo
-// 主队列同步：
+// 主队列同步:主队列和主线程互相等待，造成“死锁”
 - (void)syncMain {
     dispatch_queue_t queue = dispatch_get_main_queue();
     
@@ -80,7 +80,7 @@
         NSLog(@"3-----%@", [NSThread currentThread]);
     });
 }
-// 主队列异步函数
+// 主队列异步:不开线程，在当前线程顺序执行
 - (void)asyncMain {
     dispatch_queue_t queue = dispatch_get_main_queue();
     
@@ -95,7 +95,7 @@
     });
 }
 
-// 串行同步
+// 串行同步:在当前线程顺序执行
 - (void)syncSerial {
     dispatch_queue_t queue = dispatch_queue_create("hongShuShu", DISPATCH_QUEUE_SERIAL);
     
@@ -110,9 +110,8 @@
     });
 }
 
-// 串行异步
+// 串行异步:开新线程，在新线程顺序执行
 - (void)asyncSerial {
-    // 1.创建串行队列
     dispatch_queue_t queue = dispatch_queue_create("hongShuShu", DISPATCH_QUEUE_SERIAL);
     
     dispatch_async(queue, ^{
@@ -126,7 +125,7 @@
     });
 }
 
-// 同步并发
+// 并发同步:不开线程，在当前线程顺序执行
 - (void)syncConcurrent {
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     
@@ -141,7 +140,7 @@
     });
 }
 
-// 并发异步
+// 并发异步:开多个线程，无序执行
 - (void)asyncConcurrent {
     // 全局的并发队列
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
